@@ -2,6 +2,7 @@
 using EmployerRegister.Models;
 using EmployerRegister.Models.Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmployerRegister.Controllers
 {
@@ -14,12 +15,13 @@ namespace EmployerRegister.Controllers
 
 
         }
+
         [HttpGet]
         public IActionResult Add()
         {
-
-            return View();
+           return View();
         }
+      
 
         [HttpPost]
         public async Task< IActionResult> Add(AddEmployeViewModel addEmploye)
@@ -37,8 +39,16 @@ namespace EmployerRegister.Controllers
 
            await context.Employees.AddAsync(employee);
            await context.SaveChangesAsync();
-            return RedirectToAction("Add");
+            return RedirectToAction("Index");
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+           var employeesList= await context.Employees.ToListAsync();
+
+            return View(employeesList);
         }
     }
 }
