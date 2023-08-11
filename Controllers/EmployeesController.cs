@@ -50,5 +50,61 @@ namespace EmployerRegister.Controllers
 
             return View(employeesList);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> View(Guid id)
+        {
+           var employee= await context.Employees.FirstOrDefaultAsync(x=> x.Id == id);
+            if (employee != null)
+            {
+                var viewModel = new UpdateEmployeeViewModel()
+                {
+                    Id = employee.Id,
+                    Name = employee.Name,
+                    Email = employee.Email,
+                    Salary = employee.Salary,
+                    DateofBirth = employee.DateofBirth,
+                    Department = employee.Department,
+                };
+
+                return await Task.Run(()=>View("View",viewModel));
+
+            }
+           
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public async Task<IActionResult> View(UpdateEmployeeViewModel model)
+        {
+            var employee = await context.Employees.FindAsync(model.Id);
+            if (employee != null)
+            {
+                employee.Name = model.Name;
+                employee.Email = model.Email;
+                employee.Salary = model.Salary;
+                employee.DateofBirth = model.DateofBirth;
+                employee.Department = model.Department;
+                await context.SaveChangesAsync();
+                return RedirectToAction("Index");
+
+            }
+            return RedirectToAction("Index");
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete (UpdateEmployeeViewModel model)
+        {
+            var employee = await context.Employees.FindAsync(model.Id);
+            if (employee != null)
+            {
+                context.Employees.Remove(employee);
+                await context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
+        }
+
+
     }
 }
